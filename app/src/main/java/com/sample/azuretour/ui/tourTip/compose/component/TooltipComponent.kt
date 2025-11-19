@@ -30,12 +30,9 @@ import com.sample.azuretour.ui.tourTip.theme.TourtipTheme
 @Composable
 internal fun TooltipComponent(
     targetBounds: Rect,
-    title: @Composable (() -> Unit)?,
     message: @Composable () -> Unit,
-    extraMessage: @Composable (() -> Unit)?,
     action: @Composable (() -> Unit)?,
     onClose: (() -> Unit)?,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     shouldShowNext: Boolean,
     shouldShowBack: Boolean,
@@ -78,12 +75,9 @@ internal fun TooltipComponent(
             .onGloballyPositioned { coordinates ->
                 cardSize = coordinates.size.toSize()
             },
-        title = title,
         message = message,
-        extraMessage = extraMessage,
         action = action,
         onClose = onClose,
-        onBack = onBack,
         onNext = onNext,
         stepModel = stepModel,
         backgroundColor = backgroundColor,
