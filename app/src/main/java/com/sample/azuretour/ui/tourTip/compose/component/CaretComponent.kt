@@ -62,6 +62,86 @@ private class TriangleShape(
             when (shapeType) {
                 ShapeType.Center -> {
                     if (isCaretUp) {
+                        // Points upward
+                        moveTo(x = 0f, size.height)
+                        lineTo(x = size.width / 2, 0f)
+                        lineTo(size.width, size.height)
+                    } else {
+                        // Points downward
+                        moveTo(x = 0f, y = 0f)
+                        lineTo(x = size.width / 2, size.height)
+                        lineTo(size.width, y = 0f)
+                    }
+                }
+
+                ShapeType.LeftBounds -> {
+                    if (isCaretUp) {
+                        moveTo(0f, size.height)
+                        lineTo(size.width, size.height)
+                        lineTo(0f, 0f)
+                    } else {
+                        moveTo(0f, 0f)
+                        lineTo(size.width, 0f)
+                        lineTo(0f, size.height)
+                    }
+                }
+
+                ShapeType.RightBounds -> {
+                    if (isCaretUp) {
+                        moveTo(size.width, size.height)
+                        lineTo(0f, size.height)
+                        lineTo(size.width, 0f)
+                    } else {
+                        moveTo(size.width, 0f)
+                        lineTo(0f, 0f)
+                        lineTo(size.width, size.height)
+                    }
+                }
+            }
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
+
+@Composable
+internal fun CaretComponentOld2(
+    targetBounds: Rect,
+    isCaretUp: Boolean,
+    xOffset: Float,
+    yOffset: Float,
+    caretWidth: Dp,
+    caretHeight: Dp,
+    color: Color,
+    shapeType: ShapeType
+) {
+    if (targetBounds.isTargetZero()) return
+    val customShape = remember(isCaretUp, shapeType) { TriangleShape(isCaretUp, shapeType) }
+
+    Box(
+        modifier = Modifier
+            .offset(x = xOffset.toDp(), y = yOffset.toDp())
+            .size(caretWidth, caretHeight)
+            .background(
+                color = color,
+                shape = customShape
+            )
+    )
+}
+
+private class TriangleShapeOld2(
+    private val isCaretUp: Boolean,
+    private val shapeType: ShapeType
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val path = Path().apply {
+            when (shapeType) {
+                ShapeType.Center -> {
+                    if (isCaretUp) {
                         moveTo(x = 0f, size.height)
                         lineTo(x = size.width / 2, 0f)
                         lineTo(size.width, size.height)
