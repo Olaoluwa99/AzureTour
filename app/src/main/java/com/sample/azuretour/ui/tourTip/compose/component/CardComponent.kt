@@ -1,12 +1,14 @@
 package com.sample.azuretour.ui.tourTip.compose.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -29,18 +32,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sample.azuretour.ui.tourTip.model.StepModel
 import com.sample.azuretour.ui.tourTip.theme.TourtipTheme
 
 @Composable
 internal fun CardComponent(
     modifier: Modifier = Modifier,
-    title: @Composable (() -> Unit)?,
     message: @Composable () -> Unit,
-    extraMessage: @Composable (() -> Unit)?,
     action: @Composable (() -> Unit)?,
     onClose: (() -> Unit)?,
-    onBack: () -> Unit,
     onNext: () -> Unit,
     stepModel: StepModel?,
     shouldShowNext: Boolean,
@@ -52,76 +53,77 @@ internal fun CardComponent(
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = TourtipTheme.elevation.extra
+            defaultElevation = 0.dp//TourtipTheme.elevation.extra
         ),
         shape = RoundedCornerShape(size = TourtipTheme.radius.large),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
+            containerColor = Color.Transparent//backgroundColor,
         )
     ) {
 
         Column(
-            modifier = Modifier.padding(TourtipTheme.dimen.dp16)
+            modifier = Modifier.padding(horizontal = TourtipTheme.dimen.dp16)
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.End
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                title?.let { content ->
-                    Box(
-                        modifier = Modifier.weight(weight = 1f),
-                    ) {
-                        CompositionLocalProvider(
-                            LocalTextStyle provides MaterialTheme.typography.headlineLarge.copy(color = Color.Black),
-                            content = content
-                        )
-                    }
-                }
                 onClose?.let { onClick ->
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                            .padding(4.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.White, RoundedCornerShape(12.dp))
+                            .background(Color.Transparent)
+                            .clickable (onClick = onClick)
+                            .padding(horizontal = 18.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.Center
                     ){
-                        Icon(
-                            modifier = Modifier
-                                //.clip(CircleShape)
-                                .size(16.dp)
-                                .clickable(onClick = onClick),
-                            imageVector = Icons.Default.Close,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            contentDescription = "Close",
-                        )
+                        Text("Skip Instructions", color = Color.White, fontSize = 13.sp)
+                    }
+                }
+
+                if (stepModel?.currentStep == null){
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                            .clickable { onNext() }
+                            .padding(horizontal = 18.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(" Done ", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
+                    }
+                }else{
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                            .clickable { onNext() }
+                            .padding(horizontal = 18.dp, vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text("Next Step", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Box {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(vertical = 4.dp, horizontal = 18.dp)
+                ) {
                     CompositionLocalProvider(
-//                        LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
                         LocalTextStyle provides MaterialTheme.typography.bodyMedium,
                         content = message
                     )
-
-
-                    extraMessage?.let { extra->
-                        Spacer(modifier = Modifier.height(8.dp))
-                        CompositionLocalProvider(
-                            LocalContentColor provides Color(0xFF059C66),
-                            LocalTextStyle provides MaterialTheme.typography.bodyMedium,
-                            content = extra
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
                 }
             }
 
-            StepComponent(
+            /*StepComponent(
                 stepModel = stepModel ?: StepModel(0, 3),
                 onBack = onBack,
                 onNext = onNext,
@@ -131,7 +133,7 @@ internal fun CardComponent(
                 shouldShowNext = shouldShowNext,
                 shouldShowSkip = shouldShowSkip,
                 shouldShowBack = shouldShowBack
-            )
+            )*/
         }
     }
 }
