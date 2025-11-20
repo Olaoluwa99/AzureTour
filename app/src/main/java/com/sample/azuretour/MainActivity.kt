@@ -43,6 +43,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,18 +94,24 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TourtipSampleScreen() {
+    var mCurrentStep by remember { mutableIntStateOf(0) }
     var animType by remember { mutableStateOf(TourtipAnimType.Bouncy) }
 
     TourtipLayout(
         modifier = Modifier.fillMaxSize(),
         animType = animType,
         onClose = { currentStep ->
+            mCurrentStep = currentStep
             // Handle close for event tracking $currentStep
         },
         onBack = { currentStep ->
+            mCurrentStep = (currentStep - 1).coerceAtLeast(0)
+//            mCurrentStep = currentStep
             // Handle back for event tracking $currentStep
         },
         onNext = { currentStep ->
+            mCurrentStep = currentStep + 1
+//            mCurrentStep = currentStep
             // Handle next for event tracking $currentStep
         },
         isFinalPage = true,
@@ -117,7 +124,16 @@ fun TourtipSampleScreen() {
         AzureTourTheme {
             Scaffold(
                 bottomBar = {
-                    BottomNavBar()
+                    key (mCurrentStep){
+                        BottomNavBar(
+                            isSelected = when (mCurrentStep){
+                                4 -> 2
+                                5 -> 3
+                                6 -> 4
+                                else -> 1
+                            }
+                        )
+                    }
                 },
             ) { internalInnerPadding ->
 
@@ -139,7 +155,7 @@ fun TourtipSampleScreen() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(140.dp)
+                            .height(260.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.primary)
                             .padding(16.dp),
@@ -294,6 +310,7 @@ fun ColumnScope.TourtipSampleContent(
 
 @Composable
 fun BottomNavBar(
+    isSelected: Int
 ) {
     val showDialog = remember { mutableStateOf(false) }
     var currentRoute by remember { mutableIntStateOf(1) }
@@ -318,25 +335,25 @@ fun BottomNavBar(
                     id = 1,
                     image = Icons.Default.Home,
                     title = "Home",
-                    isSelected = currentRoute == 1
+                    isSelected = isSelected == 1
                 )
                 BottomBarItem(
                     id = 2,
                     image = Icons.Default.Favorite,
                     title = "Order",
-                    isSelected = currentRoute == 2
+                    isSelected = isSelected == 2
                 )
                 BottomBarItem(
                     id = 3,
                     image = Icons.Default.Warning,
                     title = "Wallet",
-                    isSelected = currentRoute == 3
+                    isSelected = isSelected == 3
                 )
                 BottomBarItem(
                     id = 4,
                     image = Icons.Default.AccountCircle,
                     title = "Account",
-                    isSelected = currentRoute == 4
+                    isSelected = isSelected == 4
                 )
             }
         }
@@ -351,58 +368,61 @@ fun BottomBarItem(
     title: String,
     isSelected: Boolean
 ) {
-    val tourModifier = Modifier.tourStep(tourSteps[when (id) {
+    val tourModifier = Modifier.size(48.dp).tourStep(tourSteps[when (id) {
         1 -> 0
         2 -> 4
         3 -> 5
         else -> 6
     }], HighlightType.Circle)
 
-    Column(
+    Box(
         modifier = tourModifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = image,
-            contentDescription = title,
-            tint = if (isSelected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surfaceDim,
-            modifier = Modifier
-                .padding(bottom = 2.dp)
-                .requiredSize(24.dp)
-                .padding( 0.dp)
-        )
-        Text(
-            text = title,
-            style = if (isSelected) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodySmall,
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim
-        )
+        contentAlignment = Alignment.Center
+    ){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                imageVector = image,
+                contentDescription = title,
+                tint = if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.surfaceDim,
+                modifier = Modifier
+                    .padding(bottom = 2.dp)
+                    .requiredSize(24.dp)
+                    .padding( 0.dp)
+            )
+            Text(
+                text = title,
+                style = if (isSelected) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodySmall,
+                fontSize = 13.sp,
+                textAlign = TextAlign.Center,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceDim
+            )
+        }
     }
 }
 
 val tourSteps = listOf(
-    TourStep(0, "Sell card", "Select this feature to enable you to sell your different gift cards.", ""),
-    TourStep(1, "My Wallet", "You get to see your available balance, as well as your reward earnings here.", ""),
-    TourStep(2, "Rate Calculator", "Select this feature to see your expected earning when you sell your gift card.", ""),
-    TourStep(3, "Notification", "Select this feature to have access to all your notifications.", ""),
-    TourStep(4, "Reward Center", "Select the VIP level feature to get access to the reward center.", ""),
-    TourStep(5, "Reward Center", "Select the VIP level feature to get access to the reward center.", ""),
-    TourStep(6, "Reward Center", "Select the VIP level feature to get access to the reward center.", ""),
-    TourStep(7, "Reward Center", "You can always revisit this product tour anytime by accessing it in the Help section of the app.", "")
+    TourStep(0, "Click here to see the details on the home page and explore various giftcards."),
+    TourStep(1, "Click here to  sell your  giftcards."),
+    TourStep(2, "Click here to  make bills payments eg Data, Airtime, electricity,etc."),
+    TourStep(3, "Click here to  refer and earn."),
+    TourStep(4, "Click here to see the details of your funds."),
+    TourStep(5, "Click here to earn more with each transaction."),
+    TourStep(6, "Click here to see the details of your account.")
 )
 
-data class TourStep(val index: Int, val title: String, val message: String, val extraMessage: String = "")
+data class TourStep(val index: Int, val message: String)
 
 @SuppressLint("SuspiciousModifierThen")
 fun Modifier.tourStep(step: TourStep, highlightType: HighlightType): Modifier = this.then(
     tooltipAnchor {
         TooltipModel(
             index = step.index,
-            title = { Text(step.title) },
+            title = { Text("") },
             message = { Text(step.message) },
-            extraMessage = { Text(step.extraMessage) },
+            extraMessage = { Text("") },
             highlightType = highlightType
         )
     }

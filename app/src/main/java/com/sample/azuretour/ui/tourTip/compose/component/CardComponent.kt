@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sample.azuretour.ui.tourTip.model.StepModel
@@ -111,15 +112,24 @@ internal fun CardComponent(
             Box {
                 Column(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .fillMaxWidth()
                         .background(Color.White)
-                        .padding(vertical = 4.dp, horizontal = 18.dp)
+                        .padding(vertical = 12.dp, horizontal = 18.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val centeredTextStyle = MaterialTheme.typography.bodySmall.copy(
+                        textAlign = TextAlign.Center
+                    )
                     CompositionLocalProvider(
-                        LocalTextStyle provides MaterialTheme.typography.bodyMedium,
+                        // 3. Provide the modified style
+                        LocalTextStyle provides centeredTextStyle,
                         content = message
                     )
+                    /*CompositionLocalProvider(
+                        LocalTextStyle provides MaterialTheme.typography.bodySmall,
+                        content = message
+                    )*/
                 }
             }
 
