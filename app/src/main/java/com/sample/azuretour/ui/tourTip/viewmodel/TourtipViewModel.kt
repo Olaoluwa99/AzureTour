@@ -3,8 +3,8 @@ package com.sample.azuretour.ui.tourTip.viewmodel
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.ViewModel
 import com.sample.azuretour.ui.tourTip.model.BoundsRegistry
-import com.sample.azuretour.ui.tourTip.model.TooltipModel
 import com.sample.azuretour.ui.tourTip.model.StepModel
+import com.sample.azuretour.ui.tourTip.model.TooltipModel
 import com.sample.azuretour.ui.tourTip.model.TourtipController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

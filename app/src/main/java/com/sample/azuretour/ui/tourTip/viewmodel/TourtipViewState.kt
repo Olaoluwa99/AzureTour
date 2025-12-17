@@ -1,8 +1,8 @@
 package com.sample.azuretour.ui.tourTip.viewmodel
 
 import androidx.compose.ui.geometry.Rect
-import com.sample.azuretour.ui.tourTip.model.TooltipModel
 import com.sample.azuretour.ui.tourTip.model.HighlightType
+import com.sample.azuretour.ui.tourTip.model.TooltipModel
 import com.sample.azuretour.ui.tourTip.model.OverlayModel
 import com.sample.azuretour.ui.tourTip.model.StepModel
 

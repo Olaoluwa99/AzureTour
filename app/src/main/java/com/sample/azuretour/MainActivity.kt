@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     Column(
 //                        modifier = Modifier.padding(innerPadding)
                     ){
-                        TourtipSampleScreen()
+                        TourtipSampleScreen(innerPadding)
                     }
                 }
             }
@@ -93,7 +94,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TourtipSampleScreen() {
+fun TourtipSampleScreen(
+    innerPadding: PaddingValues = PaddingValues(0.dp)
+) {
     var mCurrentStep by remember { mutableIntStateOf(0) }
     var animType by remember { mutableStateOf(TourtipAnimType.Bouncy) }
 
@@ -114,10 +117,7 @@ fun TourtipSampleScreen() {
 //            mCurrentStep = currentStep
             // Handle next for event tracking $currentStep
         },
-        isFinalPage = true,
-        shouldShowNext = true,
-        shouldShowBack = true,
-        shouldShowSkip = true,
+        innerPadding = innerPadding,
         onClickOut = {/**/}
     ) { controller ->
 
