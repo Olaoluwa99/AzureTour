@@ -38,7 +38,8 @@ internal fun CardComponent(
     message: @Composable () -> Unit,
     onClose: (() -> Unit)?,
     onNext: () -> Unit,
-    stepModel: StepModel?
+    stepModel: StepModel?,
+    isLayoutInverted: Boolean = false
 ) {
 
     Card(
@@ -55,85 +56,89 @@ internal fun CardComponent(
         Column(
             modifier = Modifier.padding(horizontal = 0.dp/*TourtipTheme.dimen.dp16*/)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            if (isLayoutInverted) {
+                // If inverted (Card is BELOW target), show Content TOP, Buttons BOTTOM
+                ContentSection(message)
+                Spacer(modifier = Modifier.height(16.dp))
+                NavigationSection(onClose, onNext, stepModel)
+            } else {
+                // Default (Card is ABOVE target), show Buttons TOP, Content BOTTOM
+                NavigationSection(onClose, onNext, stepModel)
+                Spacer(modifier = Modifier.height(16.dp))
+                ContentSection(message)
+            }
+        }
+    }
+}
+
+@Composable
+private fun NavigationSection(
+    onClose: (() -> Unit)?,
+    onNext: () -> Unit,
+    stepModel: StepModel?
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        onClose?.let { onClick ->
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(12.dp))
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .clickable(onClick = onClick)
+                    .padding(horizontal = 18.dp, vertical = 4.dp),
+                contentAlignment = Alignment.Center
             ) {
-                onClose?.let { onClick ->
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(1.dp, Color.White, RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.2f))
-                            .clickable (onClick = onClick)
-                            .padding(horizontal = 18.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Text("Skip Instructions", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.W600)
-                    }
-                }
-
-                if (stepModel?.currentStep == null){
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White)
-                            .clickable { onNext() }
-                            .padding(horizontal = 18.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Text("Done", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.W600)
-                    }
-                }else{
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White)
-                            .clickable { onNext() }
-                            .padding(horizontal = 18.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Text("Next", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.W600)
-                    }
-                }
+                Text(
+                    "Skip Instructions",
+                    color = Color.White,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.W600
+                )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Box {
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(vertical = 12.dp, horizontal = 18.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val centeredTextStyle = MaterialTheme.typography.bodySmall.copy(
-                        textAlign = TextAlign.Center
-                    )
-                    CompositionLocalProvider(
-                        // 3. Provide the modified style
-                        LocalTextStyle provides centeredTextStyle,
-                        content = message
-                    )
-                    /*CompositionLocalProvider(
-                        LocalTextStyle provides MaterialTheme.typography.bodySmall,
-                        content = message
-                    )*/
-                }
-            }
+        }
 
-            /*StepComponent(
-                stepModel = stepModel ?: StepModel(0, 3),
-                onBack = onBack,
-                onNext = onNext,
-                onSkip = {
-                    onClose?.invoke()
-                },
-                shouldShowNext = shouldShowNext,
-                shouldShowSkip = shouldShowSkip,
-                shouldShowBack = shouldShowBack
-            )*/
+        val buttonText = if (stepModel?.currentStep == null) "Done" else "Next"
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White)
+                .clickable { onNext() }
+                .padding(horizontal = 18.dp, vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                buttonText,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.W600
+            )
+        }
+    }
+}
+
+@Composable
+private fun ContentSection(message: @Composable () -> Unit) {
+    Box {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(vertical = 12.dp, horizontal = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val centeredTextStyle = MaterialTheme.typography.bodySmall.copy(
+                textAlign = TextAlign.Center
+            )
+            CompositionLocalProvider(
+                LocalTextStyle provides centeredTextStyle,
+                content = message
+            )
         }
     }
 }
